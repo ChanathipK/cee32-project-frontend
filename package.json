@@ -1,0 +1,15 @@
+{
+  "name": "cee32-project-frontend",
+  "version": "1.0.0",
+  "description": "A frontend for Computer Engineering Essentials Group 32's Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
