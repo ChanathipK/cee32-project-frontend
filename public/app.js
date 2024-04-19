@@ -1,6 +1,5 @@
 var deck = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 var yourCards = [];
-
 // Variables to store the initial position of the mouse and rectangle
 var initialX;
 var initialY;
