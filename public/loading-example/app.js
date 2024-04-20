@@ -19,7 +19,7 @@ loadButton.addEventListener("click", async () => {
         if (dotCount === 4) {
             dotCount = 1;
         }
-        let message = "loading";
+        let message = "Loading";
         for (let i = 0; i < dotCount; i++) {
             message += ".";
         }
