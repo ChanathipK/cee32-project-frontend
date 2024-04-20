@@ -84,7 +84,7 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 70vh;
+    height: 65vh;
     width: 100vw;
 }
 
@@ -133,10 +133,21 @@ h1 {
     margin-bottom: 5px;
 }
 
+#block {
+    position: absolute;
+    background-color: #333;
+    opacity: 0;
+    height: 35vh;
+    width: 80vw;
+    bottom: 0;
+    right: 0;
+    display: none;
+}
+
 #interact {
     display: flex;
     justify-content: center;
-    height: 30vh;
+    height: 35vh;
     width: 100vw;
     overflow: visible;
 }
@@ -167,9 +178,8 @@ h1 {
     margin: 2vw 20px;
     transition: transform 0.3s;
     cursor: pointer;
-    translate: 0 10vh;
 }
 
 .card:hover {
-    transform: translateY(-10vh);
+    transform: scale(1.1);
 }
