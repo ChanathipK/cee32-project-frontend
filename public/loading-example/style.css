@@ -1,3 +1,4 @@
+/* Global Adjustment */
 * {
     margin: 0;
     padding: 0;
@@ -8,9 +9,20 @@
     width: 100%;
     min-height: 100vh;
     background-color: rgba(240, 240, 240, 1);
-    position: relative;
 }
 
+/*  loading-screen is set to absolute so that it
+    doesn push other element
+
+    use min-height to guarantee that the height
+    is at least screen's height
+
+    loading-screen's display property is detemined
+    by class names below
+
+    set z-index so that it appears above other
+    element (above in z dimention, not x or y)
+*/
 #loading-screen {
     position: absolute;
     top: 0;
@@ -19,9 +31,10 @@
     min-height: 100vh;
     justify-content: center;
     align-items: center;
-    pointer-events: none;
     background-color: rgba(0, 0, 0, 0.2);
     z-index: 10;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 #loading-screen > span {
@@ -55,7 +68,6 @@
 
 /* add blur effect that will be used in main */
 /* not in loading-screen */
-
 .blur {
     filter: blur(1px);
 }
