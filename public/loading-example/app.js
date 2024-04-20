@@ -37,5 +37,4 @@ loadButton.addEventListener("click", async () => {
     main.className = "";
     loadingScreen.className = "hide";
     loadButton.disabled = false;
-
-})
+});
