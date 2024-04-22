@@ -1,26 +1,49 @@
-var deck = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+import { draw, getCards } from "./api.js"
+
 var yourCards = [];
-var cardAmount = 2;
+var cardAmount = 3;
 
 const attack = document.getElementById('attack')
 const interact = document.getElementById('interact')
 const ePlayer = document.querySelectorAll('.ePlayer');
+const blockEPlayer = document.getElementById('blockEPlayer')
 const block = document.getElementById('block')
 const playerHealthElements = document.querySelectorAll('.player .health');
 const enemyHealthElements = document.querySelectorAll('.ePlayer .health');
+
+const userId = localStorage.getItem("userId");
+const partyId = localStorage.getItem("partyId");
 
 var playable = false;
 //stat = [hp,atk,def]
 var playerStats = [
     [20, 1, 0], // player 1
-    [20, 1, 0]  // Enemy 2
+    [20, 1, 0]  // player 2
 ];
 var enemyStats = [
     [20, 1, 0], // Enemy 1
     [20, 1, 0]  // Enemy 2
 ];
 
+let penetrate = false
+
 var turnCounter = [0,0,0,0,0,0,0,0,0,0]; // count each remaining card effect time
+
+for(let i = 0; i < 3; i++){
+    drawCard()
+}
+
+for(let i = 0; i < 2; i++){
+    ePlayer[i].addEventListener("click", async () => {
+        doDamage(i);
+        attack.disabled = false;
+        //document.getElementById('attackText').textContent = '';
+        block.style.display = 'none';
+        await drawCard();
+        removeClickEvent()
+        endTurn();
+    });
+}
 
 function decreaseTurnCounter() {
     for (let i = 0; i < turnCounter.length; i++) {
@@ -40,7 +63,7 @@ function startTurn(){
 }
 
 async function fetchTurn(){
-    
+    //TODO
 }
 
 function endTurn(){
@@ -63,43 +86,23 @@ if (playable) {
 }
 else {attack.removeEventListener("click", attackPlayer);}
 
+//enable enemy button
 function attackPlayer() {
     attack.disabled = true
     document.getElementById('attackText').textContent = 'Choose a player to attack!!';
     block.style.display = 'inline'
-
-    // Define a named function for the event listener
-    function handleClick() {
-        var targetIndex = Array.from(ePlayer).indexOf(event.currentTarget);
-        console.log(targetIndex)
-        doDamage(targetIndex);
-        console.log("do");
-        attack.disabled = false;
-        //document.getElementById('attackText').textContent = '';
-        block.style.display = 'none'
-        draw();
-        removeClickEvent()
-    }
-    
-    function removeClickEvent(){
-        ePlayer.forEach(el => {
-            el.removeEventListener('click', handleClick);
-        });
-    }
-    // Add event listeners to each enemy player
-    ePlayer.forEach(element => {
-        element.addEventListener("click", handleClick);
-    });
+    blockEPlayer.style.display = 'none'
 }
 
-
+//disable enemy button
+function removeClickEvent(){
+    blockEPlayer.style.display = 'inline'
+}
 
 function doDamage(targetIndex){
-    
-    //To be impliment
-
     // Calculate the damage to the targeted enemy
     var damage = Math.max(playerStats[0][1] - enemyStats[targetIndex][2], 0);
+    if(penetrate) damage = playerStats[0][1];
     enemyStats[targetIndex][0] -= damage;
     document.getElementById('attackText').textContent = damage+' damage(s) dealt!';
     console.log(document.getElementById('attackText').textContent);
@@ -108,21 +111,17 @@ function doDamage(targetIndex){
 }
 
 
-function draw() {
+async function drawCard() {
     if(cardAmount < 5){
-        let cardIndex = Math.floor(Math.random() * deck.length);
-        let cardInfo = deck.splice(cardIndex, 1)[0];
-        yourCards.push(cardInfo);
-
+        let cardNumber = await draw();
+        yourCards.push(cardNumber);
         var newCard = addCard();
-        newCard.innerText = cardInfo;
+        newCard.innerText = cardNumber;
         cardAmount += 1;
-        endTurn();
     }
 }
 
 function addCard() {
-    console.log('draw')
     var newCard = document.createElement('div');
     newCard.classList.add('card');
     playerCards.appendChild(newCard);
@@ -154,12 +153,47 @@ function updateStatDisplay(playerStats, enemyStats) {
 // (-1 def for 2 turns): 8,  9  cards
 // (skip target 1 turn): 9,  10 cards
 // (penertrate 1 time):  10, 10 cards
+function useCard(id, playerId) {
+    if(id == 1){
+        attBuff(playerId, 1)
+    }
+    if(id == 2){
+        attBuff(playerId, 2)
+    }
+    if(id == 3){
+        attBuff(playerId, 1)
+    }
+    if(id == 4){
+        attNerf(playerId, 1)
+    }
+    if(id == 5){
+        defBuff(playerId, 1)
+    }
+    if(id == 6){
+        defBuff(playerId, 2)
+    }
+    if(id == 7){
+        defBuff(playerId, 1)
+    }
+    if(id == 8){
+        defNerf(playerId, 1)
+    }
+    if(id == 9){
+        //TODO
+    }
+    if(id == 10){
+        //TODO
+    }
+}
+
+
 function attBuff(playerIndex,amount){
     playerStats[playerIndex][1]+=amount;
     updateStatDisplay(playerStats, enemyStats);
 }
 function attNerf(enemyIndex,amount){
     enemyStats[enemyIndex][1]-=amount;
+    if(enemyStats[enemyIndex][1] < 0) enemyStats[enemyIndex][1] = 0;
     updateStatDisplay(playerStats, enemyStats);
 }
 function defBuff(playerIndex,amount){
@@ -168,8 +202,6 @@ function defBuff(playerIndex,amount){
 }
 function defNerf(enemyIndex,amount){
     enemyStats[enemyIndex][2]-=amount;
+    if(enemyStats[enemyIndex][2] < 0) enemyStats[enemyIndex][2] = 0;
     updateStatDisplay(playerStats, enemyStats);
-}
-function useCard(id) {
-
 }
