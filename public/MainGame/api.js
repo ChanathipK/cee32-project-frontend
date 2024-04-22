@@ -5,6 +5,13 @@ export async function getCards() {
   return cards;
 }
 
+
+
+export async function draw() {
+  let id = getParty;
+  const card = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`);
+}
+
 export async function getCard(id) {
     const card = await fetch(`${BACKEND_URL}/cards/${id}`).then((r) => r.json());
     return card;
@@ -47,3 +54,8 @@ export async function set(item) {
       body: JSON.stringify(cards),
     });
   }
+
+export async function getParty(partyId){
+  const party = await fetch(`${BACKEND_URL}/api/v1/game/parties/${partyId}`)
+  return party;
+}

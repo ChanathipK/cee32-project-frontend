@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>CEE32 Project Frontend</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Test Heading</h1>
-    <h2>Hello World</h2>
-    <a href=./MainGame.html><button>Play</button></a>
+    <main id="home-main">
+        <div id="login-pane">
+            <h1 id="game-name-heading">Tumo Card Game</h1>
+            <form name="login-form" action="./index.html">
+                <input id="username-input" type="text" placeholder="Username (Player Name)" />
+                <label><input id="terms-checkbox" type="checkbox" /><a target="_blank" href="terms-and-agreement.html">Terms and Agreements</a></label>
+                <input id="form-submit-button" type="submit" value="Start Game" />
+            </form>
+            <a target="_blank" href="./howtoplay.html">How to play</a>
+        </div>
+    </main>
+    <script type="module" src="app.js"></script>
 </body>
 </html>

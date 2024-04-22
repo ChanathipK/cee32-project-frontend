@@ -20,7 +20,7 @@ var enemyStats = [
     [20, 1, 0]  // Enemy 2
 ];
 
-var turnCounter = [0,0,0,0,0,0,0,0,0,,0]; // count each remaining card effect time
+var turnCounter = [0,0,0,0,0,0,0,0,0,0]; // count each remaining card effect time
 
 function decreaseTurnCounter() {
     for (let i = 0; i < turnCounter.length; i++) {
@@ -37,6 +37,10 @@ function startTurn(){
     updateStatDisplay(playerStats, enemyStats);
     attack.addEventListener("click", attackPlayer);
     playable = true;
+}
+
+async function fetchTurn(){
+    
 }
 
 function endTurn(){
