@@ -16,20 +16,24 @@ export async function getParty(){
 
 export async function draw() {
   let id = partyId;
-  console.log(`${BACKEND_URL}/api/v1/game/draw/${id}`)
-  const response = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`)
+  const response = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`,{
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
   if (response.ok) {
     const data = await response.json();
     console.log(data);
     return data;
   } else {
-      alert("An error has occured");
+      alert("An error has occured during drawing cards");
   }
 }
 
 export async function updateStat(id, stat){
-  await fetch(`${BACKEND_URL}/api/v1/users/${id}`, {
-    method: "PUT",
+  await fetch(`${BACKEND_URL}/api/v1/users/stat/${id}`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
@@ -38,7 +42,7 @@ export async function updateStat(id, stat){
 }
 
 export async function getUser(id){
-  const user = await fetch(`${BACKEND_URL}/api/v1/users/${id}`);
+  const response = await fetch(`${BACKEND_URL}/api/v1/users/${id}`);
   if (response.ok) {
     const data = await response.json();
     console.log(data);

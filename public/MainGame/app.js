@@ -48,7 +48,7 @@ for(let i = n; i < n + 2; i++){
     if(party.users[i] != userId) playersId.push(party.users[i])
 }
 for(let i = 0; i < 4; i++){
-    if(playersId.indexOf(party.users[i]) != -1) playersId.push(party.users[i])
+    if(playersId.indexOf(party.users[i]) == -1) playersId.push(party.users[i])
 }
 // playersId [userId,user's team,enemy,enemy]
 
@@ -72,10 +72,10 @@ for(let i = 0; i < 2; i++){
     });
 }
 
-//update stat every 0.5s
-setInterval(getStatUpdate, 500)
-//fetch turn every 0.5s
-setInterval(fetchTurn, 500)
+// //update stat every 0.5s
+// setInterval(getStatUpdate, 500)
+// //fetch turn every 0.5s
+// setInterval(fetchTurn, 500)
 
 function decreaseTurnCounter() {
     for (let i = 0; i < turnCounter.length; i++) {
@@ -106,15 +106,15 @@ async function updateBackendStat(){
 
 async function getStatUpdate(){
     for(let i = 0; i < 2; i++){
-        let user = getUser(playersId[i])
-        playerStats[i][0] = user.health;
+        let user = await getUser(playersId[i])
+        playerStats[i][0] = user.hp;
         playerStats[i][1] = user.attack;
         playerStats[i][2] = user.defence;
         playerStats[i][3] = user.hand;
     }
     for(let i = 0; i < 2; i++){
-        let user = getUser(playersId[i + 2])
-        enemyStats[i][0] = user.health;
+        let user = await getUser(playersId[i + 2])
+        enemyStats[i][0] = user.hp;
         enemyStats[i][1] = user.attack;
         enemyStats[i][2] = user.defence;
         enemyStats[i][3] = user.hand;
