@@ -10,6 +10,7 @@ if(localData){
 const form = document.querySelector("form");
 const formInput = document.querySelector("#username-input");
 const formTerm = document.querySelector("#terms-checkbox");
+const formBtn = document.getElementById("form-submit-button");
 
 form.addEventListener("submit",async (e)=>{
     e.preventDefault();
@@ -18,6 +19,9 @@ form.addEventListener("submit",async (e)=>{
         alert("You must agree with our term!!");
     }
     else{
+        // Disabled Start Game button
+        formBtn.disabled = true;
+
         // Create a new user
         const response = await fetch(`${BACKEND_URL}/api/v1/users/register`,{
             method: "POST",
@@ -31,12 +35,16 @@ form.addEventListener("submit",async (e)=>{
         if (response.ok) {
             const data = await response.json();
             console.log(data);
+
             // Save the returned userId in localStorage
             localStorage.setItem("userId",data);
             const partyUrl = window.location + "/party";
             window.location = partyUrl;
         } else {
+            // TODO : Show error message to user
             alert("An error has occured");
         }
+        
+        formBtn.disabled = false;
     }
 });
