@@ -4,14 +4,26 @@ const userId = localStorage.getItem("userId")
 const partyId = localStorage.getItem("partyId")
 
 export async function getParty(){
-  const party = await fetch(`${BACKEND_URL}/api/v1/game/parties/${partyId}`)
-  return party;
+  const response = await fetch(`${BACKEND_URL}/api/v1/game/parties/${partyId}`)
+    if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        return data;
+    } else {
+        alert("An error has occured");
+    }
 }
 
 export async function draw() {
   let id = partyId;
-  const card = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`);
-  return card;
+  const card = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`)
+  if (response.ok) {
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } else {
+      alert("An error has occured");
+  }
 }
 
 export async function updateStat(id, stat){
@@ -24,6 +36,16 @@ export async function updateStat(id, stat){
   })
 }
 
+export async function getUser(id){
+  const user = await fetch(`${BACKEND_URL}/api/v1/users/${id}`);
+  if (response.ok) {
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } else {
+      alert("An error has occured");
+  }
+}
 // export async function getCard(id) {
 //     const card = await fetch(`${BACKEND_URL}/cards/${id}`).then((r) => r.json());
 //     return card;
