@@ -12,7 +12,7 @@ async function fetchParties(){
 }
 
 async function fetchUserNameById(id){
-    const response = await fetch(`http://localhost:5000/api/v1/users/${id}`);
+    const response = await fetch(`${BACKEND_URL}/api/v1/users/${id}`);
     if (response.ok) {
         const data = await response.json();
         console.log(data);

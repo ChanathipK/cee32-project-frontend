@@ -3,10 +3,9 @@ import { BACKEND_URL } from "./config.js";
 const userId = localStorage.getItem("userId")
 const partyId = localStorage.getItem("partyId")
 
-export async function getCards() {
-  const player = await fetch(`${BACKEND_URL}/api/v1/game/${userId}`).then((r) => r.json());
-  console.log(r)
-  return cards;
+export async function getParty(){
+  const party = await fetch(`${BACKEND_URL}/api/v1/game/parties/${partyId}`)
+  return party;
 }
 
 export async function draw() {
@@ -15,20 +14,30 @@ export async function draw() {
   return card;
 }
 
+export async function updateStat(id, stat){
+  await fetch(`${BACKEND_URL}/api/v1/users/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(stat),
+  })
+}
+
 // export async function getCard(id) {
 //     const card = await fetch(`${BACKEND_URL}/cards/${id}`).then((r) => r.json());
 //     return card;
 // }
 
-export async function playCard(id) {
-  await fetch(`${BACKEND_URL}/users/cards/:userId`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(cards),
-  });
-}
+// export async function playCard(id) {
+//   await fetch(`${BACKEND_URL}/users/cards/:userId`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(cards),
+//   });
+// }
 
 // export async function deleteCard(id, cards) {
 //   await fetch(`${BACKEND_URL}/cards/${id}`, {
@@ -48,17 +57,12 @@ export async function playCard(id) {
 // }
 
 
-export async function set(item) {
-    await fetch(`${BACKEND_URL}/users/cards/:userId`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(cards),
-    });
-  }
-
-export async function getParty(){
-  const party = await fetch(`${BACKEND_URL}/api/v1/game/parties/${partyId}`)
-  return party;
-}
+// export async function set(item) {
+//     await fetch(`${BACKEND_URL}/users/cards/:userId`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(cards),
+//     });
+//   }
