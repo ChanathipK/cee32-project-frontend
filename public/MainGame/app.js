@@ -48,9 +48,9 @@ for(let i = n; i < n + 2; i++){
     if(party.users[i] != userId) playersId.push(party.users[i])
 }
 for(let i = 0; i < 4; i++){
-    if(playersId.find(party.users[i]) === undefined) playersId.push(party.users[i])
+    if(playersId.indexOf(party.users[i]) != -1) playersId.push(party.users[i])
 }
-
+// playersId [userId,user's team,enemy,enemy]
 
 let penetrate = false
 

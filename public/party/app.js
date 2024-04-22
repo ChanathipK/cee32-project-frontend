@@ -125,7 +125,7 @@ if(inParty){
             if(data.users.length == 4){
                 console.log("Ready!!");
                 // Navigate him to game page
-                window.location = "http://localhost:5500/MainGame/MainGame.html";
+                window.location = "http://localhost:5500/MainGame";
             }
         } else {
             alert("An error has occured during polling phase");

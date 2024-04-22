@@ -16,7 +16,8 @@ export async function getParty(){
 
 export async function draw() {
   let id = partyId;
-  const card = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`)
+  console.log(`${BACKEND_URL}/api/v1/game/draw/${id}`)
+  const response = await fetch(`${BACKEND_URL}/api/v1/game/draw/${id}`)
   if (response.ok) {
     const data = await response.json();
     console.log(data);
