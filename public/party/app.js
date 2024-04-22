@@ -117,7 +117,7 @@ if(!inParty){
 if(inParty){
     const partyId = localStorage.getItem("partyId");
     async function checkPartySize() {
-        const response = await fetch(`http://localhost:5000/api/v1/game/parties/${partyId}`);
+        const response = await fetch(`${BACKEND_URL}/api/v1/game/parties/${partyId}`);
         if (response.ok) {
             const data = await response.json();
 

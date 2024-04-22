@@ -46,6 +46,15 @@ export async function getUser(id){
       alert("An error has occured");
   }
 }
+
+export async function endTurn(){
+  await fetch(`${BACKEND_URL}/api/v1/game/end/${partyId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+}
 // export async function getCard(id) {
 //     const card = await fetch(`${BACKEND_URL}/cards/${id}`).then((r) => r.json());
 //     return card;

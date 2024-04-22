@@ -1,4 +1,4 @@
-import { draw, getParty, updateStat, getUser} from "./api.js"
+import { draw, getParty, updateStat, getUser, endTurn} from "./api.js"
 
 var yourCards = [];
 var cardAmount = 3;
@@ -57,7 +57,7 @@ let penetrate = false
 var turnCounter = [0,0,0,0,0,0,0,0,0,0]; // count each remaining card effect time
 
 for(let i = 0; i < 3; i++){
-    drawCard()
+    await drawCard()
 }
 
 for(let i = 0; i < 2; i++){
@@ -68,7 +68,7 @@ for(let i = 0; i < 2; i++){
         block.style.display = 'none';
         await drawCard();
         removeClickEvent()
-        endTurn();
+        endUserTurn();
     });
 }
 
@@ -133,15 +133,17 @@ function startTurn(){
 
 async function fetchTurn(){
     let tParty = getParty(partyId)
-    if(tParty.turn == myTurn){
+    if(tParty.turn == myTurn && !playable){
         startTurn()
+        playable = true
     }
 }
 
-function endTurn(){
+async function endUserTurn(){
     //disable attack button
     document.getElementById('attackText').textContent = 'Please wait...';
     attackBtn.removeEventListener("click", attackPlayer);
+    await endTurn()
     playable = false;
 }
 
@@ -271,7 +273,7 @@ function useCardOn(cardId, playerId) {
     }
     updateStatDisplay();
     updateBackendStat();
-    endTurn()
+    endUserTurn()
 }
 
 
