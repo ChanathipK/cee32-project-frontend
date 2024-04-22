@@ -1,5 +1,7 @@
+import { BACKEND_URL } from "./config.js";
+
 async function fetchParties(){
-    const response = await fetch("http://localhost:5000/api/v1/game/parties",{
+    const response = await fetch(`${BACKEND_URL}/api/v1/game/parties`,{
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -43,7 +45,7 @@ for (let i = 0; i < parties.length; i++) {
     if(parties[i].users.length == 4 || inParty)
         newButton.disabled = true;
     newButton.addEventListener("click", async (e)=>{
-        const response = await fetch(`http://localhost:5000/api/v1/game/join/${parties[i]._id}`,{
+        const response = await fetch(`${BACKEND_URL}/api/v1/game/join/${parties[i]._id}`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -62,7 +64,8 @@ for (let i = 0; i < parties.length; i++) {
 
             // if party is full
             if(data.isReady){
-
+                const gameUrl = "../MainGame";
+                window.location = gameUrl;
             }
 
         } else {
@@ -79,7 +82,7 @@ if(!inParty){
     newPartyBtn.id = "newPartyBtn";
     newPartyBtn.innerHTML = "<span>Create New Party</span>";
     newPartyBtn.addEventListener("click",async (e)=>{
-        const response = await fetch("http://localhost:5000/api/v1/game/create",{
+        const response = await fetch(`${BACKEND_URL}/api/v1/game/create`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

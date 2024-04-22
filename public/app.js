@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "./config.js";
 // If user has already register navigate him to the party room
 const localData = localStorage.getItem("userId");
 if(localData){
@@ -18,7 +19,7 @@ form.addEventListener("submit",async (e)=>{
     }
     else{
         // Create a new user
-        const response = await fetch("http://localhost:5000/api/v1/users/register",{
+        const response = await fetch(`${BACKEND_URL}/api/v1/users/register`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
