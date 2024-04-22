@@ -73,7 +73,7 @@ for (let i = 0; i < parties.length; i++) {
             }
 
         } else {
-            alert("An error has occured");
+            alert("An error has occured during joining party");
         }
     });
     party.appendChild(newButton);
@@ -103,8 +103,33 @@ if(!inParty){
             localStorage.setItem("partyId",data._id);
             location.reload();
         } else {
-            alert("An error has occured");
+            alert("An error has occured during creating new party");
         }
     });  
     main.appendChild(newPartyBtn);  
+}
+
+// Polling 
+
+if(inParty){
+    const partyId = localStorage.getItem("partyId");
+    async function checkPartySize() {
+        const response = await fetch(`http://localhost:5000/api/v1/game/parties/${partyId}`);
+        if (response.ok) {
+            const data = await response.json();
+
+            // Your party is full
+            if(data.users.length == 4){
+                console.log("Ready!!");
+                // Navigate him to game page
+                window.location = "http://localhost:5500/MainGame/MainGame.html";
+            }
+        } else {
+            alert("An error has occured during polling phase");
+        }
+    }
+    
+    setInterval(async () => {
+        await checkPartySize();
+    }, 5000); // Run every 5 seconds
 }
