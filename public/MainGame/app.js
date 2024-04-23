@@ -13,10 +13,10 @@ const partyId = localStorage.getItem("partyId");
 
 // Handle case that user don't have data in Localstorage
 if(!userId){
-    location.replace("http://107.20.74.210")
+    location.replace("http://107.20.74.210:3221")
 }
 if(!partyId){
-    location.replace("http://107.20.74.210/party")
+    location.replace("http://107.20.74.210:3221/party")
 }
 
 const party = await getParty(partyId);
@@ -150,7 +150,7 @@ function useCardPhase() {
 // Deal damage to target
 async function doDamage(targetIndex){
     // Calculate the damage to the targeted enemy
-    let damage = Math.max(playerStats[0][1] - enemyStats[targetIndex][2], 0);
+    let damage = Math.max(playerStats[0][1] - playerStats[targetIndex + 2][2], 0);
     if(penetrate) damage = playerStats[0][1];
     // Display message
     attackText.textContent = damage+' damage(s) dealt!';
@@ -314,7 +314,7 @@ async function getStatUpdate(){
         });
         endGame()
         localStorage.removeItem('partyId')
-        location.replace("http://107.20.74.210/party")
+        location.replace("http://107.20.74.210:3221/party")
     }
     updateStatDisplay()
 }
@@ -322,7 +322,6 @@ async function getStatUpdate(){
 // Check if this is your turn
 async function fetchTurn(){
     let tParty = await getParty(partyId);
-    updatePartyInfo(tParty);
     if(tParty.turn == myTurn && !playable){
         startTurn()
         playable = true;
@@ -338,6 +337,7 @@ async function fetchTurn(){
 function updateNameDisplay(){
     const playerName = document.querySelectorAll(".player h3");
     const enemyName = document.querySelectorAll(".ePlayer h3");
+    console.log(playerName);
     // Update name
     playerName.forEach((element,index) => {
         element.textContent = usernames[index];
@@ -394,7 +394,7 @@ function updateStatDisplay() {
 async function drawCard() {
     const tUser = await getUser(userId);
     cardAmount = tUser.hand;
-    if(cardAmount < 5 || true){
+    if(cardAmount < 5){
         let cardId = await draw();
         yourCards.push(cardId);
         let newCard = addCard(cardId);
@@ -461,11 +461,4 @@ function addCard(cardId) {
         await updateUserHand(-1);
     })
     return newCard;
-}
-
-const partyInfoRound = document.getElementById("party-info-round");
-const partyInfoTurn = document.getElementById("party-info-turn");
-function updatePartyInfo(party){
-    partyInfoRound.innerHTML = `Round ${party.round}`;
-    partyInfoTurn.innerHTML = `Turn ${party.turn}`;
 }
