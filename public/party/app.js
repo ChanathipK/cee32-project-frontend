@@ -29,59 +29,68 @@ const inParty = localStorage.getItem("partyId")!=null;
 
 // if client has not registered navigate him back to login page
 if(!userId){
-    window.location = "http://localhost:5500";
+    location.replace("http://107.20.74.210")
 }
 
 const main = document.getElementById("main");
 
-for (let i = 0; i < parties.length; i++) {
-    // Create div party
-    const party = document.createElement("div");
-    party.className = "party";
-    for(let j = 0; j < parties[i].users.length; j++){
-        const partyMember = document.createElement("span");
-        const username = await fetchUserNameById(parties[i].users[j]);
-        partyMember.innerText = username;
-        party.appendChild(partyMember);
+setInterval(async ()=>{
+    await updateParties()
+},500)
+
+async function updateParties(){
+    while(main.firstChild){
+        main.removeChild(main.firstChild)
     }
-
-    // Create new button inside div party
-    const newButton = document.createElement("button");
-    newButton.innerText = "Join this party";
-    // Prevent user from joining this party if it's full or user already have party
-    if(parties[i].users.length == 4 || inParty)
-        newButton.disabled = true;
-    newButton.addEventListener("click", async (e)=>{
-        const response = await fetch(`${BACKEND_URL}/api/v1/game/join/${parties[i]._id}`,{
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId: userId,
-            }),
-        });
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-
-            // Set current party in localStorage
-            localStorage.setItem("partyId",parties[i]._id);
-            location.reload();
-
-            // if party is full navigate him to main page
-            if(data.isReady){
-                const gameUrl = "../MainGame";
-                window.location = gameUrl;
-            }
-
-        } else {
-            alert("An error has occured during joining party");
+    const parties = await fetchParties()
+    for (let i = 0; i < parties.length; i++) {
+        // Create div party
+        const party = document.createElement("div");
+        party.className = "party";
+        for(let j = 0; j < parties[i].users.length; j++){
+            const partyMember = document.createElement("span");
+            const username = await fetchUserNameById(parties[i].users[j]);
+            partyMember.innerText = username;
+            party.appendChild(partyMember);
         }
-    });
-    party.appendChild(newButton);
-
-    main.appendChild(party);
+    
+        // Create new button inside div party
+        const newButton = document.createElement("button");
+        newButton.innerText = "Join this party";
+        // Prevent user from joining this party if it's full or user already have party
+        if(parties[i].users.length == 4 || inParty)
+            newButton.disabled = true;
+        newButton.addEventListener("click", async (e)=>{
+            const response = await fetch(`${BACKEND_URL}/api/v1/game/join/${parties[i]._id}`,{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+    
+                // Set current party in localStorage
+                localStorage.setItem("partyId",parties[i]._id);
+                location.reload();
+    
+                // if party is full navigate him to main page
+                if(data.isReady){
+                    location.replace("http://107.20.74.210/maingame")
+                }
+    
+            } else {
+                alert("An error has occured during joining party");
+            }
+        });
+        party.appendChild(newButton);
+    
+        main.appendChild(party);
+    }
 }
 
 if(!inParty){
@@ -125,7 +134,7 @@ if(inParty){
             if(data.users.length == 4){
                 console.log("Ready!!");
                 // Navigate him to game page
-                window.location = "http://localhost:5500/MainGame";
+                location.replace("http://107.20.74.210/maingame")
             }
         } else {
             alert("An error has occured during polling phase");
@@ -134,5 +143,5 @@ if(inParty){
     
     setInterval(async () => {
         await checkPartySize();
-    }, 5000); // Run every 5 seconds
+    }, 500); // Run every 5 seconds
 }

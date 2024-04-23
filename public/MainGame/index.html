@@ -1,47 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
 <body>
     <div id="game-container">
-        <div id="party-info">
-            <span id="party-info-round"></span>
-            <span id="party-info-turn"></span>
-        </div>
         <div id="player-info">
+            <!-- block is used to block all of below, (position: absolute) -->
+            <div id="block"></div>
+            <!-- team 1 -->
             <div id="team1">
-                <div class="player">
-                    <h3>Player <span class="playerName">1</span></h3>
+                <div class="player user">
+                    <h3><span class="playerName">Jessica Holdeasdasdasdasdasdasdn</span></h3>
                     <span>Health: <span class="health">20</span></span>
                     <span>ATK: <span class="atk">1</span></span>
                     <span>DEF: <span class="def">0</span></span>
                     <span>Cards: <span class="hand">2</span></span>
                 </div>
                 <div class="player">
-                    <h3>Player <span class="playerName">2</span></h3>
+                    <h3><span class="playerName">2</span></h3>
                     <span>Health: <span class="health">20</span></span>
                     <span>ATK: <span class="atk">1</span></span>
                     <span>DEF: <span class="def">0</span></span>
                     <span>Cards: <span class="hand">2</span></span>
                 </div>
             </div>
-            <h1 id="attackText"></h1>
-            <div id="targetChoose"></div>
+            <div id="group-target">
+                <h1 id="attackText">Attack:</h1>
+                <div id="targetChoose">...target...</div>
+            </div>
             <div id="blockEPlayer"></div>
+            <!-- team 2 -->
             <div id="team2">
                 <div class="ePlayer">
-                    <h3>Player <span class="playerName">3</span></h3>
+                    <h3><span class="playerName">3</span></h3>
                     <span>Health: <span class="health">20</span></span>
                     <span>ATK: <span class="atk">1</span></span>
                     <span>DEF: <span class="def">0</span></span>
                     <span>Cards: <span class="hand">2</span></span>
                 </div>
                 <div class="ePlayer">
-                    <h3>Player <span class="playerName">4</span></h3>
+                    <h3><span class="playerName">4</span></h3>
                     <span>Health: <span class="health">20</span></span>
                     <span>ATK: <span class="atk">1</span></span>
                     <span>DEF: <span class="def">0</span></span>
@@ -49,7 +43,6 @@
                 </div>
             </div>
         </div>
-        <div id="block"></div>
         <div id="interact">
             <div id="buttons">
                 <button id="attack">Attack</button>
@@ -58,6 +51,4 @@
             <div id="playerCards"></div>
         </div>
     </div>
-    <script type="module" src="app.js"></script>
 </body>
-</html>

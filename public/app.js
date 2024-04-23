@@ -2,9 +2,7 @@ import { BACKEND_URL } from "./config.js";
 // If user has already register navigate him to the party room
 const localData = localStorage.getItem("userId");
 if(localData){
-    // do something
-    const partyUrl = window.location + "/party";
-    window.location = partyUrl;
+    location.replace("http://107.20.74.210/party")
 }
 
 const form = document.querySelector("form");
@@ -38,8 +36,7 @@ form.addEventListener("submit",async (e)=>{
 
             // Save the returned userId in localStorage
             localStorage.setItem("userId",data);
-            const partyUrl = window.location + "/party";
-            window.location = partyUrl;
+            location.replace("http://107.20.74.210/party")
         } else {
             // TODO : Show error message to user
             alert("An error has occured");

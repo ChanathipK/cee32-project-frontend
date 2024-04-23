@@ -91,3 +91,9 @@ export async function attack(targetId,isDefenceUsed){
     alert("an error occured during attacking")
   }
 }
+
+export async function endGame(){
+    await fetch(`${BACKEND_URL}/api/v1/game/delete/${partyId}`, {
+    method: "DELETE"
+  });
+}

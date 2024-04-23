@@ -1,4 +1,4 @@
-import { draw, getParty, updateStat, getUser, endTurn, updateUserHand, attack} from "./api.js"
+import { draw, getParty, updateStat, getUser, endTurn, updateUserHand, attack, endGame} from "./api.js"
 
 var yourCards = [];
 
@@ -10,6 +10,14 @@ const targetChoose = document.getElementById('targetChoose');
 
 const userId = localStorage.getItem("userId");
 const partyId = localStorage.getItem("partyId");
+
+// Handle case that user don't have data in Localstorage
+if(!userId){
+    location.replace("http://107.20.74.210")
+}
+if(!partyId){
+    location.replace("http://107.20.74.210/party")
+}
 
 const party = await getParty(partyId);
 var playable = false;
@@ -115,6 +123,7 @@ setInterval(fetchTurn, 500)
 
 // Function call when turn start
 function startTurn(){
+    if(playerStats[0][0] == 0) endTurn()
     attackText.textContent = 'Your turn';
     // decreaseTurnCounter();
     // updateStatDisplay();
@@ -151,6 +160,7 @@ async function doDamage(targetIndex){
         attackText.textContent = 'You have killed enemy';
     // Get stats updated
     await getStatUpdate();
+    await updateBackendStat()
 }
 
 // End user turn
@@ -161,51 +171,60 @@ async function endUserTurn(){
     playable = false;
 }
 
-// card info
-// (+1 atk for 3 turns): 1,  20 cards
-// (+2 atk for 2 turns): 2,  10 cards
-// (+1 atk permanent):   3,  5  cards
-// (-1 atk for 2 turns): 4,  15 cards
-// (+1 def for 3 turns): 5,  12 cards
-// (+2 def for 2 turns): 6,  6  cards
-// (+1 def permanent):   7,  3  cards
-// (-1 def for 2 turns): 8,  9  cards
-// (skip target 1 turn): 9,  10 cards
-// (penertrate 1 time):  10, 10 cards
+// ca5d info
+// (+1  atk)              : 1,  20 cards
+// (+2  atk -2 hp)        : 2,  10 cards
+// (+3  atk -3 hp)        : 3,  5  cards
+// (+4  hp)               : 4,  15 cards
+// (+1  def +1 hp)        : 5,  12 cards
+// (+4  def -2 atk)       : 6,  6  cards
+// (+15 hp  -2 atk -2 def): 7,  3  cards
+// (-3  def)              : 8,  9  cards
+// (+7  hp  -2 atk)       : 9,  10 cards
+// (draw 2)               : 10, 10 cards
 function useCardOn(playerId,cardId) {
     console.log(`Player: ${userId} used card ${cardId} on ${playerId}`);    
-    // if(cardId == 1){
-    //     attBuff(playerId, 1)
-    // }
-    // if(cardId == 2){
-    //     attBuff(playerId, 2)
-    // }
-    // if(cardId == 3){
-    //     attBuff(playerId, 1)
-    // }
-    // if(cardId == 4){
-    //     attNerf(playerId, 1)
-    // }
-    // if(cardId == 5){
-    //     defBuff(playerId, 1)
-    // }
-    // if(cardId == 6){
-    //     defBuff(playerId, 2)
-    // }
-    // if(cardId == 7){
-    //     defBuff(playerId, 1)
-    // }
-    // if(cardId == 8){
-    //     defNerf(playerId, 1)
-    // }
-    // if(cardId == 9){
-    //     //TODO
-    // }
-    // if(cardId == 10){
-    //     //TODO
-    // }
-    // updateStatDisplay();
-    // updateBackendStat();
+    if(cardId == 1){
+        attBuff(playerId, 1)
+    }
+    if(cardId == 2){
+        attBuff(playerId, 2)
+        healthAdjust(playerId, -2)
+    }
+    if(cardId == 3){
+        attBuff(playerId, 3)
+        healthAdjust(playerId, -3)
+    }
+    if(cardId == 4){
+        healthAdjust(playerId, 4)
+    }
+    if(cardId == 5){
+        defBuff(playerId, 1)
+        healthAdjust(playerId, 1)
+    }
+    if(cardId == 6){
+        defBuff(playerId, 4)
+        attNerf(playerId, 2)
+        
+    }
+    if(cardId == 7){
+        healthAdjust(playerId, 15)
+        defNerf(playerId, 2)
+        attNerf(playerId, 2)
+    }
+    if(cardId == 8){
+        defNerf(playerId, 3)
+    }
+    if(cardId == 9){
+        healthAdjust(playerId,7)
+        attNerf(playerId,2)
+    }
+    if(cardId == 10){
+        drawCard()
+        drawCard()
+    }
+    updateStatDisplay();
+    updateBackendStat();
     endUserTurn();
 }
 
@@ -224,11 +243,13 @@ async function updateBackendStat(){
         await updateStat(playersId[i], {
             "attack": playerStats[i][1],
             "defence": playerStats[i][2],
-            "hp": playerStats[i][0],
+            "hp": playerStats[i][0]
         })
     }
 }
-
+function healthAdjust(playerIndex,amount){
+    playerStats[playerIndex][0] += amount;
+}
 function attBuff(playerIndex,amount){
     playerStats[playerIndex][1]+=amount;
 }
@@ -248,6 +269,8 @@ function defNerf(playerIndex,amount){
 
 // Fetch each users and update stat (display)
 async function getStatUpdate(){
+    let deathCount1 = 0;
+    let deathCount2 = 0;
     for(let i = 0; i < 4; i++){
         let user = await getUser(playersId[i])
         playerStats[i][0] = user.hp;
@@ -257,6 +280,7 @@ async function getStatUpdate(){
         if(playerStats[i][0] == 0 && !isDead[i]){
             isDead[i] = true;
             if(i > 1){
+                deathCount2 += 1
                 ePlayer[i - 2].removeEventListener("click", eventListeners[i - 2]);
                 while(ePlayer[i - 2].firstChild){
                     ePlayer[i - 2].removeChild(ePlayer[i].firstChild)
@@ -266,6 +290,7 @@ async function getStatUpdate(){
                 ePlayer.appendChild(text)
             }
             else{
+                deathCount1 += 1
                 player[i].removeEventListener("click", eventListeners[i]);
                 while(player[i].firstChild){
                     player[i].removeChild(player[i].firstChild)
@@ -276,6 +301,20 @@ async function getStatUpdate(){
             }
             targetChoose[i].style.display = 'none'
         }
+    }
+    if(deathCount1 == 2 || deathCount2 == 2){
+        if(deathCount1 == 2){
+            attackText.textContent = `${usernames[2]} and ${usernames[3]} wins!!`
+        }
+        if(deathCount2 == 2){
+            attackText.textContent = `${usernames[0]} and ${usernames[1]} wins!!`
+        }
+        await new Promise((resolve) => {
+            setTimeout(resolve, 500);
+        });
+        endGame()
+        localStorage.removeItem('partyId')
+        location.replace("http://107.20.74.210/party")
     }
     updateStatDisplay()
 }
@@ -376,34 +415,34 @@ function addCard(cardId) {
     let newCard = document.createElement('div');
     newCard.classList.add('card');
     if(cardId == 1){
-        newCard.innerText = "+1 atk for 3 turns";
+        newCard.innerText = "Increase 1 ATK";
     }
     if(cardId == 2){
-        newCard.innerText = "+2 atk for 2 turns";
+        newCard.innerText = "Increase 2 ATK while decrease 2 HP";
     }
     if(cardId == 3){
-        newCard.innerText = "+1 atk permanently";
+        newCard.innerText = "Increase 3 ATK while decrease 3 HP";
     }
     if(cardId == 4){
-        newCard.innerText = "-1 atk for 2 turns";
+        newCard.innerText = "Heal 4 HP";
     }
     if(cardId == 5){
-        newCard.innerText = "+1 def for 3 turns";
+        newCard.innerText = "Increase 1 DEF and heal 1 HP";
     }
     if(cardId == 6){
-        newCard.innerText = "+2 def for 2 turns";
+        newCard.innerText = "Increase 5 DEF while decrease 3 ATK";
     }
     if(cardId == 7){
-        newCard.innerText = "+1 def permanently";
+        newCard.innerText = "Heal 15 HP while decrease both DEF and 2 ATK";
     }
     if(cardId == 8){
-        newCard.innerText = "-1 def for 2 turns";
+        newCard.innerText = "Decrease 2 DEF";
     }
     if(cardId == 9){
-        newCard.innerText = "skip target turn 1 time";
+        newCard.innerText = "Heal 7 HP while decrease 2 ATK";
     }
     if(cardId == 10){
-        newCard.innerText = "damage denies defence 1 time";
+        newCard.innerText = "Instantly draw 2 cards";
     }
     newCard.addEventListener('click', async (e) => {
         useCardPhase();
