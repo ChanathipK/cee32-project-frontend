@@ -87,18 +87,22 @@ attackBtn.addEventListener("click", attackPlayerPhase);
 
 // Add click event to enemy player
 const ePlayer = document.querySelectorAll('.ePlayer');
-for(let i = 0; i < 2; i++){
-    ePlayer[i].addEventListener("click", async (e) => {
-        doDamage(i);
-
+const player = document.querySelectorAll('.player')
+const eventListeners = [];
+for (let i = 0; i < 2; i++) {
+    const handleClick = async (index) => {
+        doDamage(index);
         attackBtn.disabled = false;
         block.style.display = 'none';
-        
         await drawCard();
-        
         removeClickEvent();
         endUserTurn();
-    });
+    };
+    // Add event listener using the arrow function
+    ePlayer[i].addEventListener("click", handleClick.bind(null, i));
+
+    // Store reference to the arrow function
+    eventListeners.push(handleClick.bind(null, i));
 }
 
 //update stat every 0.5s
@@ -250,6 +254,28 @@ async function getStatUpdate(){
         playerStats[i][1] = user.attack;
         playerStats[i][2] = user.defence;
         playerStats[i][3] = user.hand;
+        if(playerStats[i][0] == 0 && !isDead[i]){
+            isDead[i] = true;
+            if(i > 1){
+                ePlayer[i - 2].removeEventListener("click", eventListeners[i - 2]);
+                while(ePlayer[i - 2].firstChild){
+                    ePlayer[i - 2].removeChild(ePlayer[i].firstChild)
+                }
+                const text = document.createElement("h1")
+                text.textContent = "DEAD"
+                ePlayer.appendChild(text)
+            }
+            else{
+                player[i].removeEventListener("click", eventListeners[i]);
+                while(player[i].firstChild){
+                    player[i].removeChild(player[i].firstChild)
+                }
+                const text = document.createElement("h1")
+                text.textContent = "DEAD"
+                player.appendChild(text)
+            }
+            targetChoose[i].style.display = 'none'
+        }
     }
     updateStatDisplay()
 }
@@ -383,12 +409,14 @@ function addCard(cardId) {
         useCardPhase();
         const targets = document.querySelectorAll(".target");
         for(let i=0;i<4;i++){
-            targets[i].addEventListener('click',function handleClick(){
-                useCardOn(playersId[i],cardId);
-                targetChoose.style.display = 'none';
+            if(!isDead[i]){
+                targets[i].addEventListener('click',function handleClick(){
+                    useCardOn(playersId[i],cardId);
+                    targetChoose.style.display = 'none';
 
-                targets[i].removeEventListener('click',handleClick);
-            });
+                    targets[i].removeEventListener('click',handleClick);
+                });
+            }
         }
         e.target.remove();
         await updateUserHand(-1);
