@@ -227,13 +227,15 @@ h1 {
 
 #targetChoose {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 4px;
-    right: 200px;
-    bottom: 0;
-    justify-content: center;
-    align-items: center;
     position: absolute;
+    bottom:-250px;
+    right:200px;
     opacity: 0.9;
     z-index: 200;
+}
+
+.target {
+    width: inherit;
 }

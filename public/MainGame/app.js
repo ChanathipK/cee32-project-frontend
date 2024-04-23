@@ -75,7 +75,7 @@ targetChoose.style.display = 'none';
 let cardAmount = 0;
 
 // Draw initial cards
-for(let i = 0; i < 3; i++){
+for(let i = 0; i < 1; i++){
     await drawCard();
 }
 
@@ -128,7 +128,7 @@ function attackPlayerPhase() {
 }
 
 function useCardPhase() {
-    targetChoose.style.display = 'inline';
+    targetChoose.style.display = 'flex';
     attackBtn.disabled = true;
     attackText.textContent = 'Choose a target!';
     block.style.display = 'inline';
