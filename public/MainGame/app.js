@@ -99,11 +99,11 @@ const player = document.querySelectorAll('.player')
 const eventListeners = [];
 for (let i = 0; i < 2; i++) {
     const handleClick = async (index) => {
+        removeClickEvent();
         doDamage(index);
         attackBtn.disabled = false;
         block.style.display = 'none';
         await drawCard();
-        removeClickEvent();
         endUserTurn();
     };
     // Add event listener using the arrow function
@@ -141,10 +141,11 @@ function attackPlayerPhase() {
 }
 
 function useCardPhase() {
+    blockEPlayer.style.display = "block";
     targetChoose.style.display = 'flex';
     attackBtn.disabled = true;
     attackText.textContent = 'Choose a target!';
-    block.style.display = 'inline';
+    block.style.display = 'block';
 }
 
 // Deal damage to target
@@ -154,6 +155,7 @@ async function doDamage(targetIndex){
     if(penetrate) damage = playerStats[0][1];
     // Display message
     attackText.textContent = damage+' damage(s) dealt!';
+    blockEPlayer.style.display = 'block';
     // Call backend
     const response = await attack(playersId[targetIndex+2],true);
     if(response.isTargetDead)
@@ -183,6 +185,7 @@ async function endUserTurn(){
 // (+7  hp  -2 atk)       : 9,  10 cards
 // (draw 2)               : 10, 10 cards
 function useCardOn(playerId,cardId) {
+    targetChoose.style.display = "none";
     console.log(`Player: ${userId} used card ${cardId} on ${playerId}`);    
     if(cardId == 1){
         attBuff(playerId, 1)
@@ -450,7 +453,7 @@ function addCard(cardId) {
         for(let i=0;i<4;i++){
             if(!isDead[i]){
                 targets[i].addEventListener('click',function handleClick(){
-                    useCardOn(playersId[i],cardId);
+                    useCardOn(i,cardId);
                     targetChoose.style.display = 'none';
 
                     targets[i].removeEventListener('click',handleClick);
