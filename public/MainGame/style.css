@@ -135,6 +135,34 @@ button:active {
     text-overflow: ellipsis;
 }
 
+#attackText {
+    white-space: wrap;
+    margin-bottom: 2rem;
+}
+
+#targetChoose {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.target {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0.25rem 0.25rem;
+    border: 1px solid gray;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0;
+    transition: 0.2s;
+}
+
+.target:hover {
+    cursor: pointer;
+    background-color: rgba(200, 245, 210, 0.4);
+}
+
 #blockEPlayer {
     width: 50%;
     height: 100%;
@@ -147,13 +175,30 @@ button:active {
 }
 
 #block {
-    width: 100%;
+    width: 75%;
     height: 100%;
     position: absolute;
+    right: 0;
     z-index: 10;
 
     /* start as display: none; */
     display: none;
+}
+
+.card {
+    display: flex;
+    width: 100px;
+    height: 150px;
+    background-color: #eaeaea;
+    border-radius: 5px;
+    margin: 2vw 20px;
+    transition: transform 0.3s;
+    cursor: pointer;
+    border-color:#333;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 0.25rem;
 }
 
 /* interact */
@@ -163,6 +208,7 @@ button:active {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 #buttons {
@@ -178,7 +224,11 @@ button:active {
     height: 100%;
     min-height: 6rem;
     margin-left: 2rem;
-    border-radius: 0.5rem;;
+    border-radius: 0.5rem;
+    padding: 1rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 @media (max-width: 940px) {
