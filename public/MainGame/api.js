@@ -69,5 +69,25 @@ export async function updateUserHand(amount){
     body: JSON.stringify({
       number : amount
     })
-  })
+  });
+}
+
+export async function attack(targetId,isDefenceUsed){
+  const response = await fetch(`${BACKEND_URL}/api/v1/users/attack/${targetId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userId: userId,
+      isDefenceUsed: isDefenceUsed,
+    })
+  });
+  if(response.ok){
+    const data = await response.json();
+    return data;
+  }
+  else{
+    alert("an error occured during attacking")
+  }
 }
