@@ -8,7 +8,8 @@ const blockEPlayer = document.getElementById('blockEPlayer')
 const block = document.getElementById('block')
 const targetChoose = document.getElementById('targetChoose')
 const playerCards = document.getElementById('playerCards')
-const playerName = document.querySelectorAll('playerName')
+const playerName = document.querySelectorAll('.player .playerName')
+const enemyName = document.querySelectorAll('.ePlayer .playerName')
 
 const userId = localStorage.getItem("userId");
 const partyId = localStorage.getItem("partyId");
@@ -59,10 +60,15 @@ for(let i = 0; i < 4; i++){
 
 //assign username and display them
 let username = []
-for(let i = 0; i < 4; i++){
+for(let i = 0; i < 2; i++){
     let user = getUser(playersId[i])
     username.push(user.username)
     playerName[i].textContent = user.username
+}
+for(let i = 0; i < 2; i++){
+    let user = getUser(playersId[i + 2])
+    username.push(user.username)
+    enemyName[i].textContent = user.username
 }
 
 let cardAmount = 0;

@@ -196,6 +196,7 @@ h1 {
 }
 
 .card {
+    display: flex;
     width: 100px;
     height: 150px;
     background-color: #b3b4ae;
@@ -204,7 +205,7 @@ h1 {
     transition: transform 0.3s;
     cursor: pointer;
     border-color:#333;
-    align-content: center;
+    align-items: center;
     justify-content: center;
 }
 
