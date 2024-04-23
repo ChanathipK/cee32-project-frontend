@@ -6,6 +6,9 @@ const attackBtn = document.getElementById('attack')
 const interact = document.getElementById('interact')
 const blockEPlayer = document.getElementById('blockEPlayer')
 const block = document.getElementById('block')
+const targetChoose = document.getElementById('targetChoose')
+const playerCards = document.getElementById('playerCards')
+const playerName = document.querySelectorAll('playerName')
 
 const userId = localStorage.getItem("userId");
 const partyId = localStorage.getItem("partyId");
@@ -16,12 +19,16 @@ var playable = false;
 //stat = [hp,atk,def,hand]
 var playerStats = [
     [20, 1, 0, 0], // player 1
-    [20, 1, 0, 0]  // player 2
-];
-var enemyStats = [
+    [20, 1, 0, 0],  // player 2
     [20, 1, 0, 0], // Enemy 1
     [20, 1, 0, 0]  // Enemy 2
 ];
+
+//Death status
+let isDead = []
+for(let i = 0; i < 4; i++){
+    isDead.push(false);
+}
 
 //// Init Game ////
 
@@ -50,7 +57,15 @@ for(let i = 0; i < 4; i++){
     if(playersId.indexOf(party.users[i]) == -1) playersId.push(party.users[i])
 }
 
-let cardAmount = 2;
+//assign username and display them
+let username = []
+for(let i = 0; i < 4; i++){
+    let user = getUser(playersId[i])
+    username.push(user.username)
+    playerName[i].textContent = user.username
+}
+
+let cardAmount = 0;
 
 // for debugging only
 myTurn = 1;
@@ -97,6 +112,7 @@ function attackPlayerPhase() {
     document.getElementById('attackText').textContent = 'Choose a player to attack!!';
     block.style.display = 'inline'
     blockEPlayer.style.display = 'none'
+    targetChoose.style.display = 'none'
 }
 
 function decreaseTurnCounter() {
@@ -108,18 +124,11 @@ function decreaseTurnCounter() {
 }
 
 async function updateBackendStat(){
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < 4; i++){
         await updateStat(playersId[i], {
             "attack": playerStats[i][1],
             "defence": playerStats[i][2],
             "hp": playerStats[i][0],
-        })
-    }
-    for(let i = 0; i < 2; i++){
-        await updateStat(playersId[i + 2], {
-            "attack": enemyStats[i][1],
-            "defence": enemyStats[i][2],
-            "hp": enemyStats[i][0],
         })
     }
 }
@@ -139,9 +148,16 @@ function removeClickEvent(){
 
 function doDamage(targetIndex){
     // Calculate the damage to the targeted enemy
-    var damage = Math.max(playerStats[0][1] - enemyStats[targetIndex][2], 0);
-    if(penetrate) damage = playerStats[0][1];
-    enemyStats[targetIndex][0] -= damage;
+    var damage = Math.max(playerStats[0][1] - playerStats[targetIndex][2], 0);
+    if(penetrate) {
+        damage = playerStats[0][1];
+        penetrate = false;
+    }
+    playerStats[targetIndex][0] -= damage;
+    if(playerStats[targetIndex][0] <= 0){
+        playerStats[targetIndex][0] = 0;
+        isDead[targetIndex] = true;
+    }
     document.getElementById('attackText').textContent = damage+' damage(s) dealt!';
     console.log(document.getElementById('attackText').textContent);
     // Update the targeted enemy's health
@@ -167,8 +183,8 @@ function addCard() {
 // (+1 def permanent):   7,  3  cards
 // (-1 def for 2 turns): 8,  9  cards
 // (skip target 1 turn): 9,  10 cards
-// (penertrate 1 time):  10, 10 cards
-function useCardOn(cardId, playerId) {
+// (penetrate 1 time):  10, 10 cards
+function useCardOn(cardId, playerId, card) {
     if(cardId == 1){
         attBuff(playerId, 1)
     }
@@ -199,6 +215,8 @@ function useCardOn(cardId, playerId) {
     if(cardId == 10){
         //TODO
     }
+    targetChoose.style.display = 'none'
+    card.remove()
     updateStatDisplay();
     updateBackendStat();
     endUserTurn()
@@ -208,35 +226,28 @@ function useCardOn(cardId, playerId) {
 function attBuff(playerIndex,amount){
     playerStats[playerIndex][1]+=amount;
 }
-function attNerf(enemyIndex,amount){
-    enemyStats[enemyIndex][1]-=amount;
-    if(enemyStats[enemyIndex][1] < 0) enemyStats[enemyIndex][1] = 0;
+function attNerf(playerIndex,amount){
+    playerStats[playerIndex][1]-=amount;
+    if(playerStats[playerIndex][1] < 0) playerStats[playerIndex][1] = 0;
 }
 function defBuff(playerIndex,amount){
     playerStats[playerIndex][2]+=amount;
 }
-function defNerf(enemyIndex,amount){
-    enemyStats[enemyIndex][2]-=amount;
-    if(enemyStats[enemyIndex][2] < 0) enemyStats[enemyIndex][2] = 0;
+function defNerf(playerIndex,amount){
+    playerStats[playerIndex][2]-=amount;
+    if(playerStats[playerIndex][2] < 0) playerStats[playerIndex][2] = 0;
 }
 
 //// Helper Functions ////
 
 // Fetch each users and update stat (display)
 async function getStatUpdate(){
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < 4; i++){
         let user = await getUser(playersId[i])
         playerStats[i][0] = user.hp;
         playerStats[i][1] = user.attack;
         playerStats[i][2] = user.defence;
         playerStats[i][3] = user.hand;
-    }
-    for(let i = 0; i < 2; i++){
-        let user = await getUser(playersId[i + 2])
-        enemyStats[i][0] = user.hp;
-        enemyStats[i][1] = user.attack;
-        enemyStats[i][2] = user.defence;
-        enemyStats[i][3] = user.hand;
     }
     updateStatDisplay()
 }
@@ -266,7 +277,7 @@ function updateStatDisplay() {
     });
     // Update enemy health display
     enemyHealthElements.forEach((element, index) => {
-        element.textContent = enemyStats[index][0];
+        element.textContent = playerStats[index + 2][0];
     });
 
     //Update attack
@@ -274,7 +285,7 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][1];
     });
     enemyAtkElements.forEach((element, index) => {
-        element.textContent = enemyStats[index][1];
+        element.textContent = playerStats[index + 2][1];
     });
 
     //Update defence
@@ -282,7 +293,7 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][2];
     });
     enemyDefElements.forEach((element, index) => {
-        element.textContent = enemyStats[index][2];
+        element.textContent = playerStats[index + 2][2];
     });
 
     //Update hand
@@ -290,17 +301,63 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][3];
     });
     enemyHand.forEach((element, index) => {
-        element.textContent = enemyStats[index][3];
+        element.textContent = playerStats[index + 2][3];
     });
 }
 
 // Draw card and update data to db
 async function drawCard() {
     if(cardAmount < 5){
-        let cardNumber = await draw();
-        yourCards.push(cardNumber);
+        let cardId = await draw();
+        yourCards.push(cardId);
         var newCard = addCard();
-        newCard.innerText = cardNumber;
+        if(cardId == 1){
+            newCard.innerText = "+1 atk for 3 turns";
+        }
+        if(cardId == 2){
+            newCard.innerText = "+2 atk for 2 turns";
+        }
+        if(cardId == 3){
+            newCard.innerText = "+1 atk permanently";
+        }
+        if(cardId == 4){
+            newCard.innerText = "-1 atk for 2 turns";
+        }
+        if(cardId == 5){
+            newCard.innerText = "+1 def for 3 turns";
+        }
+        if(cardId == 6){
+            newCard.innerText = "+2 def for 2 turns";
+        }
+        if(cardId == 7){
+            newCard.innerText = "+1 def permanently";
+        }
+        if(cardId == 8){
+            newCard.innerText = "-1 def for 2 turns";
+        }
+        if(cardId == 9){
+            newCard.innerText = "skip target turn 1 time";
+        }
+        if(cardId == 10){
+            newCard.innerText = "damage denies defence 1 time";
+        }
+        newCard.addEventListener('click', () => {
+            document.getElementById('attackText').textContent = 'Choose a target!';
+            block.style.display = 'inline';
+            for(let i = 0; i < 4; i++){
+                let button = document.createElement('button')
+                button.classList.add('target')
+                button.textContent = username[i];
+                button.addEventListener(useCardOn(cardId, playersId[i], this))
+                targetChoose.appendChild(button)
+            }
+            this.style.border = '5px'
+            playerCards.array.forEach(element => {
+                if(element !== this){
+                    element.style.border = '0';
+                }
+            });
+        })
         cardAmount += 1;
         playerStats[0][3] += 1;
         updateUserHand(1);
