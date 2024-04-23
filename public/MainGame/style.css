@@ -99,6 +99,22 @@ h1 {
     align-items: center;
 }
 
+#targetChoose {
+    right: 35vw;
+    display: flex;
+    flex-direction: column;
+    width: 30vw;
+    height: 70vh;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    opacity: 0;
+}
+
+.target {
+    width: 70vw;
+}
+
 #blockEPlayer {
     position: absolute;
     display: inline;
@@ -182,6 +198,7 @@ h1 {
 }
 
 .card {
+    display: flex;
     width: 100px;
     height: 150px;
     background-color: #b3b4ae;
@@ -189,6 +206,9 @@ h1 {
     margin: 2vw 20px;
     transition: transform 0.3s;
     cursor: pointer;
+    border-color:#333;
+    align-items: center;
+    justify-content: center;
 }
 
 .card:hover {

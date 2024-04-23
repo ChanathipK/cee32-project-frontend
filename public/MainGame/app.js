@@ -17,12 +17,16 @@ var playable = false;
 //stat = [hp,atk,def,hand]
 var playerStats = [
     [20, 1, 0, 0], // player 1
-    [20, 1, 0, 0]  // player 2
-];
-var enemyStats = [
+    [20, 1, 0, 0],  // player 2
     [20, 1, 0, 0], // Enemy 1
     [20, 1, 0, 0]  // Enemy 2
 ];
+
+//Death status
+let isDead = []
+for(let i = 0; i < 4; i++){
+    isDead.push(false);
+}
 
 //// Init Game ////
 
@@ -212,18 +216,11 @@ function decreaseTurnCounter() {
 }
 
 async function updateBackendStat(){
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < 4; i++){
         await updateStat(playersId[i], {
             "attack": playerStats[i][1],
             "defence": playerStats[i][2],
             "hp": playerStats[i][0],
-        })
-    }
-    for(let i = 0; i < 2; i++){
-        await updateStat(playersId[i + 2], {
-            "attack": enemyStats[i][1],
-            "defence": enemyStats[i][2],
-            "hp": enemyStats[i][0],
         })
     }
 }
@@ -231,35 +228,28 @@ async function updateBackendStat(){
 function attBuff(playerIndex,amount){
     playerStats[playerIndex][1]+=amount;
 }
-function attNerf(enemyIndex,amount){
-    enemyStats[enemyIndex][1]-=amount;
-    if(enemyStats[enemyIndex][1] < 0) enemyStats[enemyIndex][1] = 0;
+function attNerf(playerIndex,amount){
+    playerStats[playerIndex][1]-=amount;
+    if(playerStats[playerIndex][1] < 0) playerStats[playerIndex][1] = 0;
 }
 function defBuff(playerIndex,amount){
     playerStats[playerIndex][2]+=amount;
 }
-function defNerf(enemyIndex,amount){
-    enemyStats[enemyIndex][2]-=amount;
-    if(enemyStats[enemyIndex][2] < 0) enemyStats[enemyIndex][2] = 0;
+function defNerf(playerIndex,amount){
+    playerStats[playerIndex][2]-=amount;
+    if(playerStats[playerIndex][2] < 0) playerStats[playerIndex][2] = 0;
 }
 
 //// Helper Functions ////
 
 // Fetch each users and update stat (display)
 async function getStatUpdate(){
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < 4; i++){
         let user = await getUser(playersId[i])
         playerStats[i][0] = user.hp;
         playerStats[i][1] = user.attack;
         playerStats[i][2] = user.defence;
         playerStats[i][3] = user.hand;
-    }
-    for(let i = 0; i < 2; i++){
-        let user = await getUser(playersId[i + 2])
-        enemyStats[i][0] = user.hp;
-        enemyStats[i][1] = user.attack;
-        enemyStats[i][2] = user.defence;
-        enemyStats[i][3] = user.hand;
     }
     updateStatDisplay()
 }
@@ -307,7 +297,7 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][0];
     });
     enemyHealthElements.forEach((element, index) => {
-        element.textContent = enemyStats[index][0];
+        element.textContent = playerStats[index + 2][0];
     });
 
     //Update attack
@@ -315,7 +305,7 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][1];
     });
     enemyAtkElements.forEach((element, index) => {
-        element.textContent = enemyStats[index][1];
+        element.textContent = playerStats[index + 2][1];
     });
 
     //Update defence
@@ -323,7 +313,7 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][2];
     });
     enemyDefElements.forEach((element, index) => {
-        element.textContent = enemyStats[index][2];
+        element.textContent = playerStats[index + 2][2];
     });
 
     //Update hand
@@ -331,7 +321,7 @@ function updateStatDisplay() {
         element.textContent = playerStats[index][3];
     });
     enemyHand.forEach((element, index) => {
-        element.textContent = enemyStats[index][3];
+        element.textContent = playerStats[index + 2][3];
     });
 }
 
