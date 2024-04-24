@@ -36,7 +36,7 @@ const main = document.getElementById("main");
 
 setInterval(async ()=>{
     await updateParties()
-},500)
+},10000)
 
 async function updateParties(){
     while(main.firstChild){
